@@ -12,17 +12,29 @@ export const register= async(req:express.Request,res:express.Response) => {
         }   
         const existingUser= await getUserByEmail(email);
         if (existingUser){
-            return res.sendStatus(400);
+            return res.sendStatus(404);
         }
 
         const salt= random();
-        const user = createUser({username,email,authentication})
+        const user = createUser({
+            username,
+            email,
+            authentication:{
+                salt,
+                password:authentication(salt,password)
+            }
+        })
+        //console.log(user)
+        //console.log(res.status(200).json({"name":req.body.username,"email":req.body.email, "user":user}))
+        //console.log(res.status(200).json(user))
+        //console.log(user)
 
-    }catch(error){
-        console.log(error)
-        return res.sendStatus(400)
+        return res.status(200).json().end()
 
-    }
+    } catch (error) {
+        console.log(error);
+        return res.sendStatus(400);
+      }
 
 
 };
